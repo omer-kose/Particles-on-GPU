@@ -13,7 +13,12 @@ layout(std140, binding=4) buffer PositionBuffer
 	vec4 positions[];
 };
 
-layout(std140, binding=6) buffer LifetimeBuffer
+/*
+	Using std430 for base type arrays like array of floats. std430 layout and C++ side base type strides are the same. 
+
+	NOTE: If std140 is used, this will not work. Define a vec4 instead to match up with the padding that glsl compiler puts. But this will create an overhead.
+*/
+layout(std430, binding=6) buffer LifetimeBuffer
 {
 	float lifetimes[];
 };
@@ -22,5 +27,5 @@ layout(std140, binding=6) buffer LifetimeBuffer
 void main()
 {
 	lifetime = lifetimes[gl_InstanceID];
-	gl_Position = PV * vec4(pos_in + positions[gl_InstanceID].xyz, 1.0);
+	gl_Position = PV * vec4(0.05f * pos_in + positions[gl_InstanceID].xyz, 1.0);
 }

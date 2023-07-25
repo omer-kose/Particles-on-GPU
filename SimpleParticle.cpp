@@ -73,9 +73,10 @@ void SimpleParticle::m_initalizeBuffers()
 
 	for (int i = 0; i < m_numParticles; ++i)
 	{
-		positions[i] = glm::vec4(Random::RandomFloat(-10.0f, 10.0f), Random::RandomFloat(-10.0f, 10.0f), Random::RandomFloat(-10.0f, 10.0f), 1.0);
-		velocities[i] = glm::vec4(Random::RandomFloat(-2.0f, 2.0f), Random::RandomFloat(-2.0f, 2.0f), Random::RandomFloat(-2.0f, 2.0f), 1.0);
-		lifetimes[i] = Random::RandomFloat(0.0f, 1.0f);
+		positions[i] = Random::RandomOnSphere(5.0f);
+		velocities[i] = glm::normalize(positions[i]);
+		velocities[i].w = 1.0f;
+		lifetimes[i] = 1.0f;
 	}
 
 	m_posBuffer.setData(positions);

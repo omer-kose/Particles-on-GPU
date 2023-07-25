@@ -20,10 +20,27 @@ layout(std140, binding=5) buffer VelocityBuffer
 	vec4 velocities[];
 };
 
-layout(std140, binding=6) buffer LifetimeBuffer
+/*
+	Using std430 for base type arrays like array of floats. std430 layout and C++ side base type strides are the same. 
+
+	NOTE: If std140 is used, this will not work. Define a vec4 instead to match up with the padding that glsl compiler puts. But this will create an overhead.
+*/
+layout(std430, binding=6) buffer LifetimeBuffer
 {
 	float lifetimes[];
 };
+
+
+highp float rand(vec2 co)
+{
+    highp float a = 12.9898;
+    highp float b = 78.233;
+    highp float c = 43758.5453;
+    highp float dt= dot(co.xy ,vec2(a,b));
+    highp float sn= mod(dt,3.14);
+    return fract(sin(sn) * c);
+}
+
 
 void main()
 {
@@ -36,12 +53,17 @@ void main()
 	// Most basic Newtonian Motion only with gravity
 	positions[index].xyz = p + dt * v + 0.5 * dt * dt * G;
 	velocities[index].xyz = v + dt * G;
-	lifetimes[index] -= dt;
+	lifetime -= 0.2 * dt;
 	// When this is 0 do smth
-	if(lifetimes[index] <= 0.0f)
+	if(lifetime <= 0.0f)
 	{
-		lifetimes[index] = 1.0f;
+	    vec3 s = positions[index].xyz;
+		s  = -s + rand(s.xy)*20.0 - rand(s.yz)*20.0;
+		//positions[index].xyz = s;
+		lifetime = 1.0f;
 	}
+
+	lifetimes[index] = lifetime;
 
 }
 

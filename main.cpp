@@ -217,7 +217,7 @@ int main()
 	Shader shader("Shaders/solidColor/solidColor.vert",
                   "Shaders/solidColor/solidColor.frag");
 
-	SimpleParticle simpleParticle;
+	SimpleParticle simpleParticle(1024*1024);
 
 	// render loop
 	// -----------

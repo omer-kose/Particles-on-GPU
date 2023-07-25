@@ -38,7 +38,7 @@ void ParticleManager::drawPass(const Camera& camera)
 	m_graphicsPipelineShaders.use();
 	// Set uniforms
 	glm::mat4 view = camera.getViewMatrix();
-	glm::mat4 projection = glm::perspective(glm::radians(camera.getFov()), (float)SCR_WIDTH / SCR_HEIGHT, 0.1f, 100.0f);
+	glm::mat4 projection = glm::perspective(glm::radians(camera.getFov()), (float)SCR_WIDTH / SCR_HEIGHT, 0.1f, 1000.0f);
 	glm::mat4 PV = projection * view;
 	m_graphicsPipelineShaders.setMat4("PV", PV);
 	// Bind the SSBOs to the correct places given in the hash map
