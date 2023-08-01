@@ -13,6 +13,7 @@
 #include "Camera.h"
 #include "Random.h"
 #include "SimpleParticle.h"
+#include "FireParticle.h"
 
 
 //Utility Headers
@@ -217,7 +218,8 @@ int main()
 	Shader shader("Shaders/solidColor/solidColor.vert",
                   "Shaders/solidColor/solidColor.frag");
 
-	SimpleParticle simpleParticle(1024*1024);
+	//SimpleParticle simpleParticle(1024*1024);
+	FireParticle fireParticle;
 
 	// render loop
 	// -----------
@@ -234,7 +236,9 @@ int main()
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
         //renderTestRectangle(rect, shader);
-		simpleParticle.render(camera, deltaTime);
+		//simpleParticle.render(camera, deltaTime);
+		fireParticle.render(camera, deltaTime);
+		printf("%f \n ", 1.0 / deltaTime);
 
 		// glfw: swap buffers and poll IO events (keys pressed/released, mouse moved etc.)
 		// -------------------------------------------------------------------------------

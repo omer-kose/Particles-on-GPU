@@ -30,5 +30,26 @@ public:
 		return glm::vec4(x, y, z, 1.0f);
 	}
 
+	static float RandomSpread(float center, float spread)
+	{
+		return RandomFloat(center - spread, center + spread);
+	}
+
+	static glm::vec2 RandomSpreadVec2(const glm::vec2& center, const glm::vec2& spread)
+	{
+		return glm::vec2(RandomSpread(center.x, spread.x), RandomSpread(center.y, spread.y));
+	}
+
+	static glm::vec2 RandomUnitVec2OnCircle(float center, float spread)
+	{
+		float angle = RandomSpread(center, spread);
+		return UnitVec2OnCircle(angle);
+	}
+private:
+	// Helper Functions
+	static glm::vec2 UnitVec2OnCircle(float angle)
+	{
+		return glm::vec2(cos(angle), sin(angle));
+	}
 
 };

@@ -27,8 +27,10 @@ class ParticleManager
 public:
 	ParticleManager();
 	ParticleManager(const ParticleInformation& info);
-	void computePass(double dt);
-	void drawPass(const Camera& camera);
+	void computePass();
+	void drawPass();
+	ComputeShader getComputeShader();
+	Shader getGraphicsPipelineShaders();
 private:
 	void m_prepareSSBOs();
 private:

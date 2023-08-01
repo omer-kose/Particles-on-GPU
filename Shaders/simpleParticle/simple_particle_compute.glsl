@@ -1,13 +1,13 @@
 #version 460 core
 
+// Process particles in blocks of 64
+layout (local_size_x = 64, local_size_y = 1, local_size_z = 1) in;
+
 // Constants
 const vec3 G = vec3(0.0, -0.0, 0.0);
 
 // Uniforms
 uniform float dt;
-
-// Process particles in blocks of 64
-layout (local_size_x = 64, local_size_y = 1, local_size_z = 1) in;
 
 
 layout(std140, binding=4) buffer PositionBuffer

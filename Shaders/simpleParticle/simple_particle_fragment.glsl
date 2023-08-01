@@ -22,5 +22,4 @@ void main()
 	}
 
 	fs_out.xyz = pow(fs_out.xyz, vec3(1.0f / 2.2f));
-	
 }

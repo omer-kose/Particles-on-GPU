@@ -1,9 +1,10 @@
 #pragma once
-#ifndef SIMPLE_PARTICLE_H
-#define SIMPLE_PARTICLE_H
+#ifndef FIRE_PARTICLE_H
+#define FIRE_PARTICLE_H
 
+#include <GL/glew.h>
 #include <glm/glm.hpp>
-
+#include <GLFW/glfw3.h>
 
 #include "ParticleManager.h"
 #include "Random.h"
@@ -31,16 +32,32 @@
 		- int length() function which is the number of elements in the data
 */
 
+struct FireParticleOptions
+{
+	glm::vec3 emit_center;
+	float dt;
+	float time;
+	float fire_death_speed;
+	float wind_strength;
+	float wind_turbulence;
+	float fire_triangleness;
+	float speed;
+	bool wind;
+	bool omni_directional; // omni directional wind
+};
 
-class SimpleParticle
+class FireParticle
 {
 public:
-	SimpleParticle();
-	SimpleParticle(int numParticles);
+	FireParticle();
+	FireParticle(int numParticles);
+	FireParticle(glm::vec3 emitCenter);
+	FireParticle(glm::vec3 emitCenter, int numParticles);
 	void render(const Camera& camera, double dt);
 private:
 	void m_initalizeBuffers();
 	void m_prepareParticleInformation();
+	void m_setParticleOptions();
 	void m_setComputePassUniforms(double dt);
 	void m_setDrawPassUniforms(const Camera& camera);
 private:
@@ -49,10 +66,14 @@ private:
 	// Buffers
 	PositionBuffer m_posBuffer;
 	VelocityBuffer m_velBuffer;
+	ColorBuffer m_colBuffer;
 	LifetimeBuffer m_lifetimeBuffer;
 	// Properties
+	glm::vec3 m_emitCenter = glm::vec3(0.0f, 0.0f, 0.0f);
 	int m_numParticles = 8192;
 	int m_localWorkGroupSize = 64;
+	FireParticleOptions m_options;
+
 };
 
 
