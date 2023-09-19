@@ -135,4 +135,34 @@ private:
 };
 
 
+/*
+	Contains random numbers in range [0-1]. Will be used for better GPU Randomness
+*/
+class RandomFloatBuffer : public Buffer
+{
+public:
+	virtual void* data() const override
+	{
+		return (void*)randomFloat.data();
+	}
+
+	virtual int size() const override
+	{
+		return  randomFloat.size() * sizeof(float);
+	}
+
+	virtual int length() const override
+	{
+		return randomFloat.size();
+	}
+
+	void setData(const std::vector<float>& data)
+	{
+		randomFloat = data;
+	}
+private:
+	std::vector<float> randomFloat;
+};
+
+
 #endif

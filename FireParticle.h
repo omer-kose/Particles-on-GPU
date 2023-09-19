@@ -46,6 +46,7 @@ struct FireParticleOptions
 	bool omni_directional; // omni directional wind
 };
 
+
 class FireParticle
 {
 public:
@@ -60,6 +61,9 @@ private:
 	void m_setParticleOptions();
 	void m_setComputePassUniforms(double dt);
 	void m_setDrawPassUniforms(const Camera& camera);
+	void m_updateRandomNumbersBuffer();
+	void m_loadTextures();
+	void m_bindFireTexture(const std::string& textureName);
 private:
 	// The Particle Manager
 	ParticleManager manager;
@@ -67,12 +71,13 @@ private:
 	PositionBuffer m_posBuffer;
 	VelocityBuffer m_velBuffer;
 	ColorBuffer m_colBuffer;
-	LifetimeBuffer m_lifetimeBuffer;
+	RandomFloatBuffer m_randomFloatBuffer;
 	// Properties
 	glm::vec3 m_emitCenter = glm::vec3(0.0f, 0.0f, 0.0f);
 	int m_numParticles = 8192;
 	int m_localWorkGroupSize = 64;
 	FireParticleOptions m_options;
+	std::unordered_map<std::string, GLuint> m_textures;
 
 };
 

@@ -57,6 +57,11 @@ Shader ParticleManager::getGraphicsPipelineShaders()
 	return m_graphicsPipelineShaders;
 }
 
+GLuint ParticleManager::getSSBO(int binding)
+{
+	return m_ssbos[binding];
+}
+
 void ParticleManager::m_prepareSSBOs()
 {
 	// For each buffer create the corresponding SSBO

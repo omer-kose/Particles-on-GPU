@@ -6,8 +6,8 @@ layout (local_size_x = 64, local_size_y = 1, local_size_z = 1) in;
 // Constants
 const float pi = 3.14159265359;
 // These constants could also be uniforms
-const vec2 emit_position_spread = vec2(1.0f, 0.05f); 
-const float emit_angle_variance = 0.42; // In radians
+const vec2 emit_position_spread = vec2(1.0f, 0.0f); 
+const float emit_angle_variance = pi / 4; // In radians
 
 
 // Uniforms (would be better if I put them into a buffer but meh)
@@ -43,9 +43,9 @@ layout(std140, binding=6) buffer ColorBuffer
 
 	NOTE: If std140 is used, this will not work. Define a vec4 instead to match up with the padding that glsl compiler puts. But this will create an overhead.
 */
-layout(std430, binding=7) buffer LifetimeBuffer
+layout(std430, binding=7) buffer RandomFloatsBuffer
 {
-	float lifetimes[]; // [0, 1]
+	float randomFloats[]; // [0, 1]
 };
 
 
@@ -186,10 +186,29 @@ vec2 unit_vec2_on_circle(float angle)
 	return vec2(cos(angle), sin(angle));
 }
 
+float hash11(float p)
+{
+    p = fract(p * 0.1031);
+    p *= p + 33.33;
+    p *= p + p;
+    return fract(p);
+}
+
+
+vec3 hash31(float p)
+{
+    vec3 p3 = fract(vec3(p) * vec3(0.1031, 0.1030, 0.0973));
+    p3 += dot(p3, p3.yzx + 33.33);
+    return fract((p3.xxy + p3.yzz) * p3.zyx);
+}
+
+
 float random_spread(float center, float spread)
 {
 	// Map random number between -1 and 1 (using uniform distribution)
-	float r = 2.0 * (n1rand(positions[gl_GlobalInvocationID.x].xy * time) - 0.5);
+	//float r = 2.0 * (n1rand(positions[gl_GlobalInvocationID.x].xy * time) - 0.5);
+	//float r = 2.0 * (randomFloats[gl_GlobalInvocationID.x] - 0.5);
+	float r = 2.0f * (hash11(gl_GlobalInvocationID.x * time) - 0.5f);
 	return center + r * spread;
 }
 
@@ -201,6 +220,8 @@ vec2 random_spread_vec2(vec2 center, vec2 spread)
 vec2 random_unit_vec2_on_circle(float center, float spread)
 {
 	float angle = random_spread(center, spread);
+	angle = hash11(float(gl_LocalInvocationID / float(gl_WorkGroupSize.x) * time)) * emit_angle_variance + (pi / 2 - emit_angle_variance / 2);
+	//angle = hash11(float(gl_LocalInvocationID / float(gl_WorkGroupSize.x) * time)) * pi;
 	return unit_vec2_on_circle(angle);
 }
 
@@ -211,7 +232,6 @@ void main()
 	vec3 p = positions[index].xyz;
 	vec3 v = velocities[index].xyz;
 	vec4 c = colors[index];
-	float lifetime = lifetimes[index];
 
 	// Motion
 	if(wind)
@@ -219,36 +239,34 @@ void main()
 		// Multiply by dt ?
 		if(omni_directional)
 		{
-			v += dt * wind_strength * vec3(unit_vec2_on_circle(pi * (simplex3(vec3(p.x, p.y, dt * wind_turbulence)) + 1.0f)), 0.0f);
+			v += 0.01f * wind_strength * vec3(unit_vec2_on_circle(pi * (simplex3(vec3(p.x, p.y, dt * wind_turbulence)) + 1.0f)), 0.0f);
 		}
 		else
 		{
-			v += dt * wind_strength * vec3(unit_vec2_on_circle(0.5f * pi * (simplex3(vec3(p.x, p.y, dt * wind_turbulence)) + 1.0f)), 0.0f);
+			v += 0.01f * wind_strength * vec3(unit_vec2_on_circle(0.5f * pi * (simplex3(vec3(p.x, p.y, dt * wind_turbulence)) + 1.0f)), 0.0f);
 		}
 	}
 
 	// Move the particle
-	p += 0.01f * dt * v;
+	p += 0.005f * dt * v;
 
 	// Fade the flame out
 	c.a -= dt * (fire_death_speed + fire_triangleness * abs(p.x - emit_center.x));
 
-	lifetime -= fire_death_speed * dt; // Scale this to prolong the lifetime
 	// When the particle dies or it fades out
-	if(lifetime <= 0.0f || c.a <= 0.0f)
+	if(c.a <= 0.0f)
 	{
 		// Reinstantiate the dead particle using random spread 
 		// Note that z position never changes. Fire only flows in xy plane
 		p.xy = random_spread_vec2(emit_center.xy, emit_position_spread);
+		p.y = hash11(index) * emit_position_spread.y;
 		v.xy = speed * random_unit_vec2_on_circle(pi / 2.0f, emit_angle_variance);
-		c.a = 0.5f;
-		lifetime = random_spread(1.0f, 0.4f);
+		c.a = 4.0f * hash11(index);
 	}
 
 
 	positions[index].xyz = p;
 	velocities[index].xyz = v;
 	colors[index] = c;
-	lifetimes[index] = lifetime;
 
 }

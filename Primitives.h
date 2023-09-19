@@ -7,12 +7,13 @@ class Primitives
 public:
 	static GLuint quad()
 	{
+		// position + texture
 		GLfloat vertices[] =
 		{
-			 0.5f,  0.5f, 0.0f,  // top right
-			 0.5f, -0.5f, 0.0f,  // bottom right
-			-0.5f, -0.5f, 0.0f,  // bottom left
-			-0.5f,  0.5f, 0.0f   // top left 
+			 0.5f,  0.5f, 0.0f, 1.0f, 1.0f,  // top right
+			 0.5f, -0.5f, 0.0f, 1.0f, 0.0f,  // bottom right
+			-0.5f, -0.5f, 0.0f, 0.0f, 0.0f,  // bottom left
+			-0.5f,  0.5f, 0.0f, 0.0f, 1.0f   // top left 
 		};
 
 		GLuint indices[] =
@@ -37,7 +38,9 @@ public:
 
 		//Configure Vertex Attributes
 		glEnableVertexAttribArray(0);
-		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(GLfloat), (void*)0);
+		glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)0);
+		glEnableVertexAttribArray(1);
+		glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(GLfloat), (void*)(3 * sizeof(float)));
 
 		//Data passing and configuration is done 
 		glBindBuffer(GL_ARRAY_BUFFER, 0);

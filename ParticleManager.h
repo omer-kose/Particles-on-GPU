@@ -9,6 +9,8 @@
 #include "Shader.h"
 #include "ComputeShader.h"
 #include "Camera.h"
+#include "Random.h"
+#include "TextureLoader.h"
 
 
 struct ParticleInformation
@@ -31,6 +33,7 @@ public:
 	void drawPass();
 	ComputeShader getComputeShader();
 	Shader getGraphicsPipelineShaders();
+	GLuint getSSBO(int binding);
 private:
 	void m_prepareSSBOs();
 private:
